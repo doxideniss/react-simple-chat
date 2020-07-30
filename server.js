@@ -17,6 +17,7 @@ app.post('/rooms', (req, res) => {
       new Map([
         ['pass', password],
         ['users', new Map()],
+        ['typing_users', new Set()],
         ['messages', []],
       ]),
     );
@@ -52,7 +53,17 @@ io.on('connection', (socket) => {
     rooms.get(roomID).get('messages').push(obj);
     socket.to(roomID).broadcast.emit('ROOM:NEW_MESSAGE', obj)
   });
+  socket.on('ROOM:TYPING', ({userName, roomID, typing}) => {
+    const typing_users = rooms.get(roomID).get('typing_users');
+    if (typing && !typing_users.has(userName)) {
+       typing_users.add(userName)
+    } else {
+      typing_users.delete(userName)
+    }
+    socket.to(roomID).broadcast.emit('ROOM:SET_TYPING_USERS', [...typing_users])
+  });
   socket.on('disconnect', () => {
+    console.log('disc');
     rooms.forEach((value, roomID) => {
       if (value.get('users').delete(socket.id)) {
         const users = [...value.get('users').values()];

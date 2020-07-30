@@ -14,6 +14,7 @@ function App() {
     userName: null,
     users: [],
     messages: [],
+    typing_users: []
   });
 
   const onLogin = (data) => {
@@ -46,10 +47,18 @@ function App() {
     })
   };
 
+  const setTypingUsers = (users) => {
+    dispatch({
+      type: 'SET_TYPING_USERS',
+      payload: users
+    });
+  };
+
   React.useEffect(() => {
     socket.on('ROOM:SET_DATA', setData);
     socket.on('ROOM:SET_USERS', setUsers);
     socket.on('ROOM:NEW_MESSAGE', addMessage);
+    socket.on('ROOM:SET_TYPING_USERS', setTypingUsers);
   }, []);
 
   return (

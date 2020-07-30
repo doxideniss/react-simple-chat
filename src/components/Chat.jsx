@@ -2,8 +2,9 @@ import React from 'react';
 import socket from "../socket";
 import classnames from 'classnames';
 
-const Chat = ({ users, messages, userName, roomID, onAddMessage }) => {
+const Chat = ({ typing_users, users, messages, userName, roomID, onAddMessage }) => {
   const [messageValue, setMessageValue] = React.useState('');
+  const [typing, setTyping] = React.useState(false);
   const messagesRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -22,6 +23,28 @@ const Chat = ({ users, messages, userName, roomID, onAddMessage }) => {
       text: messageValue
     });
     setMessageValue('');
+  };
+
+  const onInputBlur = () => {
+    socket.emit('ROOM:TYPING', {
+      userName,
+      roomID,
+      typing: false
+    });
+    setTyping(false);
+  };
+
+  const handleTextAreaChange = (e) => {
+    setMessageValue(e.target.value);
+    if (!typing) {
+      socket.emit('ROOM:TYPING', {
+        userName,
+        roomID,
+        typing: true
+      });
+      setTyping(true);
+    }
+
   };
 
   return (
@@ -54,10 +77,18 @@ const Chat = ({ users, messages, userName, roomID, onAddMessage }) => {
             )
           })}
         </div>
+        {
+          typing_users.length ? (
+            <div>
+              {typing_users.join(', ')} typing...
+            </div>
+          ) : null
+        }
         <form onSubmit={onSendMessage}>
           <textarea
             value={messageValue}
-            onChange={(e) => setMessageValue(e.target.value)}
+            onChange={handleTextAreaChange}
+            onBlur={onInputBlur}
             className="form-control"
             rows="3"/>
           <button type="submit" className="btn btn-primary">

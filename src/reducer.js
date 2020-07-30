@@ -25,6 +25,11 @@ export default (state, action) => {
         ...state,
         ...action.payload
       };
+    case 'SET_TYPING_USERS':
+      return {
+        ...state,
+        typing_users: action.payload.filter((userName) => userName !== state.userName)
+      };
     default:
       return state;
   }
