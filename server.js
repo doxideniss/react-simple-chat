@@ -4,6 +4,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+app.use(express.static(path.join(__dirname, 'build')));
 app.use(express.json());
 
 const rooms = new Map();
@@ -72,6 +73,10 @@ io.on('connection', (socket) => {
     })
   })
 });
+
+server.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+})
 
 const PORT = process.env.PORT || 9999;
 
