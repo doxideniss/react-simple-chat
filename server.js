@@ -36,7 +36,9 @@ app.post('/rooms', (req, res) => {
   res.send();
 });
 
-app.get('/', (req, res) => res.sendFile(__dirname + './index.html'));
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, '../build/index.html'));
+});
 
 io.on('connection', (socket) => {
   socket.on('ROOM:JOIN', async ({roomID, userName}) => {
