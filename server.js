@@ -73,7 +73,9 @@ io.on('connection', (socket) => {
   })
 });
 
-server.listen(9999, (err) => {
+const PORT = process.env.PORT || 9999;
+
+server.listen(PORT, (err) => {
   if (err) {
     throw Error(err);
   }
