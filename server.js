@@ -4,8 +4,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-app.use(express.static(path.join(__dirname, 'build')));
-app.use(favicon(path.join(__dirname, '/build/favicon.ico')));
+app.use(express.static(path.join(__dirname, '../build')));
 app.use(express.json());
 
 const PORT = process.env.PORT || 9999;
@@ -36,9 +35,7 @@ app.post('/rooms', (req, res) => {
   res.send();
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build/index.html'));
-})
+app.get('/', (req, res) => res.sendFile(__dirname + './index.html'));
 
 io.on('connection', (socket) => {
   socket.on('ROOM:JOIN', async ({roomID, userName}) => {
